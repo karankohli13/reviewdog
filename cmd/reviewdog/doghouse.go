@@ -22,6 +22,7 @@ import (
 	"github.com/reviewdog/reviewdog/proto/rdf"
 	"github.com/reviewdog/reviewdog/service/github/githubutils"
 	"github.com/reviewdog/reviewdog/service/serviceutil"
+	"github.com/slack-go/slack"
 )
 
 func runDoghouse(ctx context.Context, r io.Reader, w io.Writer, opt *option, isProject bool, forPr bool) error {
@@ -237,6 +238,27 @@ github-pr-check reporter as a fallback.
 			foundResultPerName = true
 			if cienv.IsInGitHubAction() {
 				githubutils.ReportAsGitHubActionsLog(name, results.Level, result.Diagnostic)
+				// SLACK
+				slack_token := os.Getenv("SLACK_TOKEN");
+				if(slack_token){
+				api := slack.New(slack_token)
+				attachment := slack.Attachment{
+					Pretext: "some pretext",
+					Text:    "some text",
+				}
+
+				channelID, timestamp, err := api.PostMessage(
+					"CHANNEL_ID",
+					slack.MsgOptionText("Some text", false),
+					slack.MsgOptionAttachments(attachment)
+				)
+				if err != nil {
+					fmt.Printf("%s\n", err)
+					return
+				}
+				fmt.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
+			}
+
 			} else {
 				// Output original lines.
 				fmt.Fprintln(w, result.Diagnostic.GetOriginalOutput())

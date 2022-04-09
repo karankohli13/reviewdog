@@ -30,6 +30,7 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/yaml.v2 v2.4.0
+	github.com/slack-go/slack v0.10.2
 )
 
 require cloud.google.com/go/compute v1.5.0
